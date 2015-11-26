@@ -14,6 +14,9 @@ import android.net.wifi.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import java.util.List;
+import java.util.TimerTask;
+import java.util.Timer;
+
 import android.util.Log;
 
 /**
@@ -21,25 +24,67 @@ import android.util.Log;
  */
 public class WifiList extends Activity{
 
+    private static final int SCAN_DEPLAY = 1000; // (milisecond)
+    private static final int SCAN_INTERVAL = 1000; // interval update
     WifiManager wifiManager;
     WifiScanReceiver wifiScanReceiver;
     TextView tvWifiList;
-    TableLayout tableLayout = (TableLayout) findViewById(R.id.table_main);
-    TableRow tbrow;
+    TableLayout tableLayout;
+
+    private boolean mPause = false;
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.wifi_list_view);
 
         tvWifiList = (TextView)findViewById(R.id.tvWifiList);
         tvWifiList.setTextSize(25);
 
-        //TableLayout tableLayout = (TableLayout) findViewById(R.id.table_main);
+        tableLayout = (TableLayout) findViewById(R.id.table_main);
+        displayWifiList(null);
+        wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        wifiScanReceiver = new WifiScanReceiver();
 
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (mPause == false) {
+                    wifiManager.startScan();
+                }
+            }
+        }, SCAN_DEPLAY, SCAN_INTERVAL);
+
+
+    }
+    @Override
+    protected void onPause()
+    {
+        unregisterReceiver(wifiScanReceiver);
+        super.onPause();
+        mPause = true;
+    }
+    @Override
+    protected void onResume()
+    {
+        registerReceiver(wifiScanReceiver, new IntentFilter(wifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        super.onResume();
+        mPause = false;
+    }
+    private class WifiScanReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context c, Intent intent) {
+            List<ScanResult> wifiScanList = wifiManager.getScanResults();
+            displayWifiList(wifiScanList);
+        }
+    }
+    private void displayWifiList(List<ScanResult> wifiScanList)
+    {
+        tableLayout.removeAllViewsInLayout();
         TableRow tbrowSSID = new TableRow(this);
         TextView tvSSID = new TextView(this);
-        tvSSID.setText(" SSID ");
+        tvSSID.setText(" SSID        ");
         tvSSID.setTextColor(Color.WHITE);
         tbrowSSID.addView(tvSSID);
 
@@ -55,86 +100,31 @@ public class WifiList extends Activity{
 
         tableLayout.addView(tbrowSSID);
 
-        tbrow = new TableRow(this);
 
-
-//        for (int i = 0; i < 25; i++) {
-//            TableRow tbrow = new TableRow(this);
-//            TextView tvSSID_Value = new TextView(this);
-//            tvSSID_Value.setText("" + i);
-//            tvSSID_Value.setTextColor(Color.WHITE);
-//            tvSSID_Value.setGravity(Gravity.CENTER);
-//            tbrow.addView(tvSSID_Value);
-//
-//            TextView tvBSSID_Value = new TextView(this);
-//            tvBSSID_Value.setText("BSSID " + i);
-//            tvBSSID_Value.setTextColor(Color.WHITE);
-//            tvBSSID_Value.setGravity(Gravity.CENTER);
-//            tbrow.addView(tvBSSID_Value);
-//
-//            TextView tvRSSI_Value = new TextView(this);
-//            tvRSSI_Value.setText("Rssi." + i);
-//            tvRSSI_Value.setTextColor(Color.WHITE);
-//            tvRSSI_Value.setGravity(Gravity.CENTER);
-//            tbrow.addView(tvRSSI_Value);
-//
-//            tableLayout.addView(tbrow);
-//        }
-
-        wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-        wifiScanReceiver = new WifiScanReceiver(this);
-        wifiManager.startScan();
-    }
-    @Override
-    protected void onPause()
-    {
-        unregisterReceiver(wifiScanReceiver);
-        super.onPause();
-    }
-    @Override
-    protected void onResume()
-    {
-        registerReceiver(wifiScanReceiver, new IntentFilter(wifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        super.onResume();
-    }
-    private class WifiScanReceiver extends BroadcastReceiver{
-
-        private WifiList outer;
-
-        public WifiScanReceiver(WifiList outerClass)
-        {
-            outer = outerClass;
-        }
-        @Override
-        public void onReceive(Context c, Intent intent) {
-            List<ScanResult> wifiScanList = wifiManager.getScanResults();
-
-            for(ScanResult record : wifiScanList)
-            {
-                String outPut = "SSID:" + record.SSID + "   BSSID:" + record.BSSID + "   RSSI Level:" + record.level;
-                System.out.println(outPut);
-                //TableRow tbrow = new TableRow(outer);
-                TextView tvSSID_Value = new TextView(outer);
-                tvSSID_Value.setText("" + record.SSID);
+        if(wifiScanList != null) {
+            for (ScanResult record : wifiScanList) {
+                TableRow tbrow = new TableRow(this);
+                TextView tvSSID_Value = new TextView(this);
+                tvSSID_Value.setText(record.SSID +"        ");
                 tvSSID_Value.setTextColor(Color.WHITE);
-                tvSSID_Value.setGravity(Gravity.CENTER);
+                tvSSID_Value.setGravity(Gravity.LEFT);
                 tbrow.addView(tvSSID_Value);
 
-                TextView tvBSSID_Value = new TextView(outer);
-                tvBSSID_Value.setText("BSSID " + record.BSSID);
+                TextView tvBSSID_Value = new TextView(this);
+                tvBSSID_Value.setText(record.BSSID);
                 tvBSSID_Value.setTextColor(Color.WHITE);
                 tvBSSID_Value.setGravity(Gravity.CENTER);
                 tbrow.addView(tvBSSID_Value);
 
-                TextView tvRSSI_Value = new TextView(outer);
-                tvRSSI_Value.setText("Rssi." + record.level);
+                TextView tvRSSI_Value = new TextView(this);
+                tvRSSI_Value.setText("" +record.level);
                 tvRSSI_Value.setTextColor(Color.WHITE);
                 tvRSSI_Value.setGravity(Gravity.CENTER);
                 tbrow.addView(tvRSSI_Value);
 
                 tableLayout.addView(tbrow);
-
             }
+
         }
     }
 }

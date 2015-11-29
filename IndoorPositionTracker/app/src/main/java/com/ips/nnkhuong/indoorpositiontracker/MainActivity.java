@@ -51,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onTracker(View v)
     {
         if(v.getId() == R.id.btnTracker) {
-            greeting.setText("Tracking");
+            Intent intent = new Intent(MainActivity.this, MapTracker.class);
+            startActivity(intent);
+
         }
     }
 
@@ -59,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onWifiList(View v)
     {
         if(v.getId() == R.id.btnWifiList) {
-            //greeting.setText("List of Wifi Info");
             Intent intent = new Intent(MainActivity.this, WifiList.class);
             startActivity(intent);
         }

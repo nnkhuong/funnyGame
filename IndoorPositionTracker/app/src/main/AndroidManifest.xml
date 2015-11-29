@@ -23,7 +23,12 @@
 
         <activity
             android:name=".WifiList">
+        </activity>
+
+        <activity
+            android:name=".MapTracker">
         </activity>>
+
     </application>
 
 </manifest>

@@ -16,7 +16,8 @@ import net.sourceforge.zbar.Image;
 import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
-
+import android.media.ToneGenerator;
+import android.media.AudioManager;
 public class ZBarScannerActivity extends Activity implements Camera.PreviewCallback, ZBarConstants {
 
     private static final String TAG = "ZBarScannerActivity";
@@ -131,6 +132,10 @@ public class ZBarScannerActivity extends Activity implements Camera.PreviewCallb
             mCamera.cancelAutoFocus();
             mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
+
+            final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP);
+
             mPreviewing = false;
             SymbolSet syms = mScanner.getResults();
             for (Symbol sym : syms) {

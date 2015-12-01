@@ -34,14 +34,6 @@ public class MainActivity extends AppCompatActivity {
         //textEditURL = (EditText) findViewById(R.id.textEdit_URL);
     }
 
-//    public void goSettings(MenuItem menuItem)
-//    {
-//        textView.setText("Settings");
-//        Intent intent = new Intent(this, AppSettings.class);
-//
-//        startActivityForResult(intent, 0);
-//
-//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -60,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, AppSettings.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivityForResult(intent, ZBarConstants.URL_CONFIG);
+            startActivityForResult(intent, ZBarConstants.URL_CONFIG_REQUEST);
             return true;
         }
 
@@ -98,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            case ZBarConstants.URL_CONFIG:
+            case ZBarConstants.URL_CONFIG_REQUEST:
                 if(resultCode == RESULT_OK)
                 {
                     URL = data.getStringExtra(ZBarConstants.URL_RESULT);

@@ -41,7 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Scan"
-            android:id="@+id/btnScanSettings" />
+            android:onClick="onURLScan"
+            android:id="@+id/btnURLScan" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

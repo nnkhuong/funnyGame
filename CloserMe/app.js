@@ -1,7 +1,7 @@
 
 var express = require('express');
 var path = require('path');
-//var bodyParser = require('body-parser');
+
 var qrImage = require('qr-image');
 var fs = require('fs');
 
@@ -13,7 +13,7 @@ app.set('view engine', 'ejs');
 app.set('views' , path.join(__dirname, 'views'));
 app.use(express.static("public"));
 // use middleware
-app.use(bodyParser());
+
 
 // define routes
 
@@ -32,6 +32,9 @@ app.post('/generateQR', function(req, res) {
 	res.redirect('/');
 });
 
+app.post('/getGelocation', function(req, res) {   
+  res.render('map');
+});
 
 function randomString(length, chars) {
     var result = '';
@@ -45,6 +48,4 @@ var server = app.listen(3000, function () {
 
   console.log('Example app listening at http://%s:%s', host, port);
 
-  var rString = randomString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-  console.log(rString);
 });

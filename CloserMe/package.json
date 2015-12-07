@@ -1,7 +1,7 @@
 {
   "name": "closerme",
   "version": "1.0.0",
-  "description": "",
+  "description": "Deploy website",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,7 @@
   "author": "khuong",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "qr-image": "^3.1.0"
   }
 }

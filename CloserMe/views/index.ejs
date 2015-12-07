@@ -5,15 +5,17 @@
     <title>My App</title>
 </head>
 <body>
-	<h1>Proximity Check</h1>
-	<form action="/generateQR" method="post">
-	<input type="submit" value="Generate QR">
-	
-	<% if (imageQR.length > 0) { %> 
-		<ul>
-			<img src=<%= imageQR %> width="240" height="240" />
-		</ul>
-	<% } %>
-	
+  <h1>Proximity Check</h1>
+  <form action="/generateQR" method="post">
+  <input type="submit" name="GenerateCode" value="Generate QR">
+
+  <input type="submit" name="ShowMap" value="Show Map" formaction="/getGelocation" method="post">
+</form>
+  <% if (imageQR.length > 0) { %> 
+    <ul>
+      <img src=<%= imageQR %> width="240" height="240" />
+    </ul>
+  <% } %>
+  
 </body>
 </html>

@@ -36,6 +36,10 @@ app.post('/getGelocation', function(req, res) {
   res.render('map');
 });
 
+app.post('/doAuthorization', function(req, res) {
+  console.log('Received from Client Device');
+});
+
 function randomString(length, chars) {
     var result = '';
     for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];

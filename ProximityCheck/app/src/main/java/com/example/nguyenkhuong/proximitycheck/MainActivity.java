@@ -21,6 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.sourceforge.zbar.Symbol;
+
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
@@ -30,7 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private boolean LocationAvailable;
-    private String URL;
+    private String urlString;
+    private static final String TAG = "PROXIMITY_CHECK";
+    private static final String action = "/doAuthorization";
     static {
         System.loadLibrary("iconv");
     }
@@ -54,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 longitude = Double.toString(pLon);
                 latitude = Double.toString(pLat);
 
-                Log.d("GET_GEO", "Longitude:" + longitude);
-                textView.setText(longitude);
+                Log.d(TAG, "Longitude:" + longitude);
+                //textView.setText(longitude);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -68,11 +80,11 @@ public class MainActivity extends AppCompatActivity {
         // Check permisson and then Register the listener with the Location Manager to receive location updates
         LocationAvailable = checkPermission();
         if(LocationAvailable) {
-            Log.d("GET_GEO", "Location is available");
+            Log.d(TAG, "Location is available");
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         }
         else {
-            Log.d("GET_GEO", "Location no available");
+            Log.d(TAG, "Location no available");
             requestPermission();
         }
 
@@ -103,6 +115,44 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void onSend() {
+        try {
+            Log.d(TAG, urlString);
+            URL url = new URL(urlString);
+
+            String urlParameters = "fName=" + URLEncoder.encode("???", "UTF-8") +
+                            "&lName=" + URLEncoder.encode("???", "UTF-8");
+
+            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+            httpURLConnection.setReadTimeout(10000);
+            httpURLConnection.setConnectTimeout(15000);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
+
+            httpURLConnection.setRequestProperty("Content-Length", "" +
+                    Integer.toString(urlParameters.getBytes().length));
+            httpURLConnection.setRequestProperty("Content-Language", "en-US");
+
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setDoOutput(true);
+
+            DataOutputStream dataOutputDtream = new DataOutputStream(httpURLConnection.getOutputStream());
+            try {
+                dataOutputDtream.writeBytes(urlParameters);
+                dataOutputDtream.flush();
+                dataOutputDtream.close();
+            }
+            catch (Exception e)
+            {
+                
+            }
+        }
+        catch(Exception e)
+        {
+            Log.d(TAG, e.getMessage());
+        }
+    }
     public void launchQRScanner(View v) {
         if (isCameraAvailable()) {
             Intent intent = new Intent(this, ZBarScannerActivity.class);
@@ -120,13 +170,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        textView.setText("BC");
         switch (requestCode) {
             case ZBarConstants.ZBAR_SCANNER_REQUEST:
             case ZBarConstants.ZBAR_QR_SCANNER_REQUEST:
                 if (resultCode == RESULT_OK) {
 
                     textView.setText(data.getStringExtra(ZBarConstants.SCAN_RESULT));
+                    onSend();
                 } else if(resultCode == RESULT_CANCELED && data != null) {
                     String error = data.getStringExtra(ZBarConstants.ERROR_INFO);
                     if(!TextUtils.isEmpty(error)) {
@@ -137,9 +187,8 @@ public class MainActivity extends AppCompatActivity {
             case ZBarConstants.URL_CONFIG_REQUEST:
                 if(resultCode == RESULT_OK)
                 {
-                    URL = data.getStringExtra(ZBarConstants.URL_RESULT);
-                    textView.setText(URL);
-                    Log.d("AppSettings", "URL:" + URL);
+                    urlString = data.getStringExtra(ZBarConstants.URL_RESULT) + action;
+                    Log.d(TAG, urlString);
                 }
                 break;
         }
@@ -151,11 +200,11 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         LocationAvailable = checkPermission();
         if(LocationAvailable) {
-            Log.d("GET_GEO", "Location is available");
+            Log.d(TAG, "Location is available");
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         }
         else {
-            Log.d("GET_GEO", "Location no available");
+            Log.d(TAG, "Location no available");
             requestPermission();
         }
 

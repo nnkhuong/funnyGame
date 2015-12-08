@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>My App</title>
+    <style>
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto
+        }
+    </style>
 </head>
 <body>
   <h1>Proximity Check</h1>
@@ -13,7 +20,7 @@
 </form>
   <% if (imageQR.length > 0) { %> 
     <ul>
-      <img src=<%= imageQR %> width="240" height="240" />
+      <img src=<%= imageQR %> width="240" height="240"  />
     </ul>
   <% } %>
   

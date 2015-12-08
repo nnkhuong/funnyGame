@@ -1,8 +1,15 @@
 package com.example.nguyenkhuong.proximitycheck;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -11,14 +18,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import net.sourceforge.zbar.Symbol;
 public class MainActivity extends AppCompatActivity {
 
     private TextView textView;
-    //private EditText textEditURL;
+
+    private String longitude;
+    private String latitude;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private boolean LocationAvailable;
     private String URL;
     static {
         System.loadLibrary("iconv");
@@ -29,9 +40,42 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         textView = (TextView) findViewById(R.id.textView);
-        //textEditURL = (EditText) findViewById(R.id.textEdit_URL);
+
+        // Get the location manager
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                double pLon = location.getLongitude();
+                double pLat = location.getLatitude();
+                longitude = Double.toString(pLon);
+                latitude = Double.toString(pLat);
+
+                Log.d("GET_GEO", "Longitude:" + longitude);
+                textView.setText(longitude);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Check permisson and then Register the listener with the Location Manager to receive location updates
+        LocationAvailable = checkPermission();
+        if(LocationAvailable) {
+            Log.d("GET_GEO", "Location is available");
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        }
+        else {
+            Log.d("GET_GEO", "Location no available");
+            requestPermission();
+        }
+
     }
 
     @Override
@@ -105,6 +149,45 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
+        LocationAvailable = checkPermission();
+        if(LocationAvailable) {
+            Log.d("GET_GEO", "Location is available");
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        }
+        else {
+            Log.d("GET_GEO", "Location no available");
+            requestPermission();
+        }
 
+
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        LocationAvailable = checkPermission();
+        if(LocationAvailable) {
+            // Remove the listener you previously added
+            locationManager.removeUpdates(locationListener);
+        }
+
+    }
+    private boolean checkPermission(){
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (result == PackageManager.PERMISSION_GRANTED){
+            LocationAvailable = true;
+            return true;
+        } else {
+            LocationAvailable = false;
+            return false;
+        }
+    }
+    private void requestPermission(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+            Toast.makeText(this, "This app relies on location data for it's main functionality. Please enable GPS data to access all features.", Toast.LENGTH_LONG).show();
+        } else {
+
+        }
     }
 }

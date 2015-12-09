@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private boolean LocationAvailable;
-    private String urlString;
+    private String urlString = "http://10.10.35.18:3000/doAuthorization";
     private static final String TAG = "PROXIMITY_CHECK";
     private static final String action = "/doAuthorization";
     static {
@@ -116,42 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSend() {
-        try {
-            Log.d(TAG, urlString);
-            URL url = new URL(urlString);
-
-            String urlParameters = "fName=" + URLEncoder.encode("???", "UTF-8") +
-                            "&lName=" + URLEncoder.encode("???", "UTF-8");
-
-            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-            httpURLConnection.setReadTimeout(10000);
-            httpURLConnection.setConnectTimeout(15000);
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
-
-            httpURLConnection.setRequestProperty("Content-Length", "" +
-                    Integer.toString(urlParameters.getBytes().length));
-            httpURLConnection.setRequestProperty("Content-Language", "en-US");
-
-            httpURLConnection.setUseCaches(false);
-            httpURLConnection.setDoInput(true);
-            httpURLConnection.setDoOutput(true);
-
-            DataOutputStream dataOutputDtream = new DataOutputStream(httpURLConnection.getOutputStream());
-            try {
-                dataOutputDtream.writeBytes(urlParameters);
-                dataOutputDtream.flush();
-                dataOutputDtream.close();
-            }
-            catch (Exception e)
-            {
-                
-            }
-        }
-        catch(Exception e)
-        {
-            Log.d(TAG, e.getMessage());
-        }
+        new NetworkAsyncTask("").execute();
     }
     public void launchQRScanner(View v) {
         if (isCameraAvailable()) {

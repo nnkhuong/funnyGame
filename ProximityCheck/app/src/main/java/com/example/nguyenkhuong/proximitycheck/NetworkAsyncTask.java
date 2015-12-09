@@ -3,12 +3,18 @@ package com.example.nguyenkhuong.proximitycheck;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by nguyenkhuong on 12/8/15.
@@ -17,7 +23,7 @@ public class NetworkAsyncTask extends AsyncTask {
 
     private String data;
     private static final String TAG = "PROXIMITY_CHECK";
-    private String urlString = "http://10.10.35.18:3000/doAuthorization";
+    private String urlString = "http://10.10.13.34:3000/doAuthorization";
 
     public NetworkAsyncTask(String data)
     {
@@ -26,46 +32,40 @@ public class NetworkAsyncTask extends AsyncTask {
     @Override
     protected Object doInBackground(Object[] params) {
 
+        String urlParameters  = "param1=a&param2=b&param3=c";
+        byte[] postData       = urlParameters.getBytes( Charset.forName("UTF-8"));
+        int    postDataLength = postData.length;
+        String request        = "http://10.10.13.34:3000/doAuthorization";
         try {
-            Log.d(TAG, urlString);
-            URL url = new URL(urlString);
 
-            String urlParameters = "";
+            URL url = new URL(request);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setChunkedStreamingMode(0);
+            OutputStream wr = new BufferedOutputStream(conn.getOutputStream());
 
-            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-
-            httpURLConnection.setReadTimeout(10000);
-            httpURLConnection.setConnectTimeout(15000);
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
-
-            httpURLConnection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
-            httpURLConnection.setRequestProperty("Content-Language", "en-US");
-
-            httpURLConnection.setUseCaches(false);
-            httpURLConnection.setDoInput(true);
-            httpURLConnection.setDoOutput(true);
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(httpURLConnection.getOutputStream()));
-            writer.write("");
-            writer.flush();
-            writer.close();
-
-
-            //dataOutputDtream.writeBytes(urlParameters);
-            //dataOutputDtream.flush();
-            //dataOutputDtream.close();
-
+            try
+            {
+                wr.write(postData);
+                wr.flush();
+                wr.close();
+                Log.d(TAG, "Send: " + postData + "to->" + request);
+            }
+            catch(IOException e)
+            {
+                Log.e(TAG, e.toString());
+            }
         }
-        catch (MalformedURLException e)
+        catch (Exception e)
         {
-            Log.d(TAG, "MalformedURLException" + e.getMessage());
+            Log.e(TAG, e.toString());
         }
-        catch(IOException e)
-        {
-            Log.d(TAG, "IOException" + e.getMessage());
-        }
-
         return null;
     }
+
+    @Override
+    protected void onPostExecute(Object o) {
+        super.onPostExecute(o);
+    }
+
 }

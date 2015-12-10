@@ -30,7 +30,7 @@ public class NetworkAsyncTask extends AsyncTask {
     private String latitude;
     private static final String TAG = "PROXIMITY_CHECK";
     private String urlString = "http://10.10.13.34:3000/doAuthorization";
-
+    //private String urlString = "http://10.10.35.18:3000/doAuthorization";
     public NetworkAsyncTask(String data, String lon, String lat)
     {
         this.qrDecoded = data;
@@ -43,7 +43,7 @@ public class NetworkAsyncTask extends AsyncTask {
         String urlParameters  = "param1=a&param2=b&param3=c";
         //byte[] postData       = urlParameters.getBytes( Charset.forName("UTF-8"));
         //int    postDataLength = postData.length;
-        String request        = "http://10.10.35.18:3000/doAuthorization";
+
         try {
 
             // build jsonObject
@@ -55,34 +55,46 @@ public class NetworkAsyncTask extends AsyncTask {
             jsonObject.put("qrstring", this.qrDecoded);
             jsonObject.put("longitude", this.longitude);
             jsonObject.put("latitude", this.latitude);
-            String json = jsonObject.toString();
-            Log.d(TAG, json);
+            String jsonString = jsonObject.toString();
+
             // convert JsonObject to json string
             //json = jsonObject.toString();
 
             // set json to StringEntity
 
-            URL url = new URL(request);
+            URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Accept", "application/json");
-            //conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Content-type", "application/json");
             conn.setDoOutput(true);
+
             conn.setChunkedStreamingMode(0);
             //Writer wr = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            //OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            //bufferedWriter.write(jsonString);
             //byte[] postData       = json.getBytes( Charset.forName("UTF-8"));
            // byte[] postData       = json.getBytes();
             //Log.d(TAG, "" + postData.toString());
             try {
-                for(int i = 0; i < json.length(); ++i)
-                {
-                    wr.write(json.charAt(i));
-                    //wr.flush();
-                }
+//                for(int i = 0; i < json.length(); ++i)
+//                {
+//                    wr.write(json.charAt(i));
+//                    //wr.flush();
+//                }
                 //wr.write(json, 0, json.length() -1);
-                wr.flush();
-                wr.close();
+                Log.d(TAG, jsonString);
+                bufferedWriter.write(jsonString);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                //wr.write(jsonString);
+                //wr.flush();
+                //wr.close();
                 //Log.d(TAG, "Send: " + postData + "to->" + request);
+
             }
             catch(IOException e)
             {
@@ -93,6 +105,7 @@ public class NetworkAsyncTask extends AsyncTask {
         {
             Log.e(TAG, e.toString());
         }
+
         return null;
     }
 

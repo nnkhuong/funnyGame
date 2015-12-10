@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 latitude = Double.toString(pLat);
 
                 Log.d(TAG, "Longitude:" + longitude);
-                //textView.setText(longitude);
+                Log.d(TAG, "Latitude:" + latitude);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSend() {
-        new NetworkAsyncTask("").execute();
+        new NetworkAsyncTask("" + textView.getText(), longitude, latitude).execute();
     }
     public void launchQRScanner(View v) {
         if (isCameraAvailable()) {

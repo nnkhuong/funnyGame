@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private boolean LocationAvailable;
-    private String urlString = "http://10.10.35.18:3000/doAuthorization";
+    private String urlString = "";
     private static final String TAG = "PROXIMITY_CHECK";
     private static final String action = "/doAuthorization";
     static {
@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(location != null)
         {
-            new NetworkAsyncTask("" + textView.getText(), Double.toString(location.getLongitude()), Double.toString(location.getLatitude())).execute();
+            new NetworkAsyncTask(urlString, "" + textView.getText(), Double.toString(location.getLongitude()), Double.toString(location.getLatitude())).execute();
         }
         else
         {
-            new NetworkAsyncTask("" + textView.getText(), longitude, latitude).execute();
+            new NetworkAsyncTask(urlString, "" + textView.getText(), longitude, latitude).execute();
         }
 
 

@@ -13,16 +13,17 @@ app.set('view engine', 'ejs');
 app.set('views' , path.join(__dirname, 'views'));
 app.use(express.static("public"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
 
 
 // define routes
-
+var PORT = 3000;
 var imageQR_File_Name = "";
 var locationQR_File = "public/MyQRCode.png";
-var rString = "abc";
+var rString = "";
 var gLongitude = "";
 var gLatitude = "";
+
+var urlAddress = "http://" + getIPAddress() + ":" + PORT;
 
 app.get('/', function (req, res) {
   res.render('index', {imageQR : imageQR_File_Name});
@@ -33,6 +34,14 @@ app.post('/generateQR', function(req, res) {
 	imageQR_File_Name = "MyQRCode.png";
 	qrImage.image(rString, {type:'png', size:20}).pipe(fs.createWriteStream(locationQR_File));
 	 
+	res.redirect('/');
+});
+
+app.post('/GetURL_Add', function(req, res) {
+
+	imageQR_File_Name = "MyQRCode.png";
+	qrImage.image(urlAddress, {type:'png', size:20}).pipe(fs.createWriteStream(locationQR_File));
+
 	res.redirect('/');
 });
 
@@ -72,10 +81,28 @@ function randomString(length, chars) {
     return result;
 }
 
+function getIPAddress() {
+  var interfaces = require('os').networkInterfaces();
+  for (var devName in interfaces) {
+    var iface = interfaces[devName];
+
+    for (var i = 0; i < iface.length; i++) {
+      var alias = iface[i];
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+        return alias.address;
+    }
+  }
+
+  return '0.0.0.0';
+}
+
+
+
 var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log('Example app listening at http://%s:%s', host, port);
+  console.log('Example app listening at %s', urlAddress);
+
 
 });

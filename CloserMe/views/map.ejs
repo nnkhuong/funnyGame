@@ -135,6 +135,16 @@ function initMap() {
     center: chicago
   });
 
+  if( <%= longitude %> != "" )
+  {
+      marker = new google.maps.Marker({
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: {lat: <%= latitude %>, lng: <%= longitude %>}
+       });
+  }
+
   // Create the DIV to hold the control and call the CenterControl() constructor
   // passing in this DIV.
   var centerControlDiv = document.createElement('div');

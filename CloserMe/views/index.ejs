@@ -13,8 +13,10 @@
 </head>
 <body>
   <h1>Proximity Check</h1>
-  <form action="/generateQR" method="post">
-  <input type="submit" name="GenerateCode" value="Generate QR">
+  <form action="/GetURL_Add" method="post">
+  <input type="submit" name="GetURL_Add" value="Get URL Address">
+
+  <input type="submit" name="GenerateCode" value="Generate QR" formaction="/generateQR" method="post">
 
   <input type="submit" name="ShowMap" value="Show Map" formaction="/getGelocation" method="post">
 </form>

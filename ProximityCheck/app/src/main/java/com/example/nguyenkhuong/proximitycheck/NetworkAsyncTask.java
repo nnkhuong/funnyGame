@@ -29,10 +29,10 @@ public class NetworkAsyncTask extends AsyncTask {
     private String longitude;
     private String latitude;
     private static final String TAG = "PROXIMITY_CHECK";
-    //private String urlString = "http://10.10.13.34:3000/doAuthorization";
-    private String urlString = "http://10.10.35.18:3000/doAuthorization";
-    public NetworkAsyncTask(String data, String lon, String lat)
+    private String urlString = "";
+    public NetworkAsyncTask(String urlString, String data, String lon, String lat)
     {
+        this.urlString = urlString;
         this.qrDecoded = data;
         this.longitude = lon;
         this.latitude = lat;
@@ -58,8 +58,6 @@ public class NetworkAsyncTask extends AsyncTask {
             conn.setDoOutput(true);
             conn.setFixedLengthStreamingMode(jsonString.length());
             Log.d(TAG, jsonString);
-            byte[] b = new byte[jsonString.length()];
-            b = jsonString.getBytes();
 
             conn.getOutputStream().write(jsonString.getBytes());
             conn.getOutputStream().flush();

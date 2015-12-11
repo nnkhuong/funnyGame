@@ -12,11 +12,8 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views' , path.join(__dirname, 'views'));
 app.use(express.static("public"));
-//app.use(bodyParser.text());
 app.use(bodyParser.json());
-//app.use(express.json());
 app.use(bodyParser.urlencoded());
-// use middleware
 
 
 // define routes
@@ -40,30 +37,33 @@ app.post('/generateQR', function(req, res) {
 });
 
 app.post('/getGelocation', function(req, res) {   
-  res.render('map');
+  res.render('map', {longitude : gLongitude , latitude : gLatitude});
 });
 
 //         doAuthorization
 app.post('/doAuthorization', function(req, res) {
   console.log('Received from Client Device');
-  var qrString = req.body;
-  //var lat = req.body.latitude;
-  //var lon = req.body.longitude;
+  var qrString = req.body.qrstring;
+  var lat = req.body.latitude;
+  var lon = req.body.longitude;
 
   console.log(qrString);
+  console.log(lon);
+  console.log(lat);
+  console.log(req.body);
+  if(qrString == rString)
+  {
+    console.log('Success');
+    gLongitude = lon;
+    gLatitude = lat;
+    res.send({ status: 200 });
 
-  // if(qrString == rString)
-  // {
-  //   gLongitude = lon;
-  //   gLatitude = lat;
-  //   res.send({ status: 200 });
-  // }
-  // else
-  // {
-  //   res.send({ status: 401 });
-  // }
+  }
+  else
+  {
+     res.send({ status: 401 });
+  }
 
-  res.send({ status: 200 });
 });
 
 function randomString(length, chars) {

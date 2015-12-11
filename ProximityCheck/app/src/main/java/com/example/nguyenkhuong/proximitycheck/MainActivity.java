@@ -117,7 +117,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSend() {
-        new NetworkAsyncTask("" + textView.getText(), longitude, latitude).execute();
+
+        LocationAvailable = checkPermission();
+        Location location = null;
+        if(LocationAvailable) {
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        else {
+            Log.d(TAG, "Location no available");
+            requestPermission();
+        }
+
+        if(location != null)
+        {
+            new NetworkAsyncTask("" + textView.getText(), Double.toString(location.getLongitude()), Double.toString(location.getLatitude())).execute();
+        }
+        else
+        {
+            new NetworkAsyncTask("" + textView.getText(), longitude, latitude).execute();
+        }
+
+
     }
     public void launchQRScanner(View v) {
         if (isCameraAvailable()) {

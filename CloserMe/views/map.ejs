@@ -43,6 +43,9 @@
     <div id="map"></div>
     <script>
 var map;
+
+
+// Show default if there is no real longitude and latitude which is got from Android app
 var chicago = {lat: 41.85, lng: -87.65};
 
 /**
@@ -123,6 +126,10 @@ CenterControl.prototype.setCenter = function(center) {
 };
 
 function initMap() {
+  if( <%= longitude %> != "" )
+  {
+    chicago = {lat: <%= latitude %> , lng: <%= longitude %>};
+  }
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: 12,
     center: chicago

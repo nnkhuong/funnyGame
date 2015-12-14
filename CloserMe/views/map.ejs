@@ -126,24 +126,24 @@ CenterControl.prototype.setCenter = function(center) {
 };
 
 function initMap() {
-  if( <%= longitude %> != "" )
-  {
-    chicago = {lat: <%= latitude %> , lng: <%= longitude %>};
-  }
+  <% if (longitude != "" && longitude != "" ) { %> 
+
+     chicago = {lat: <%= latitude %> , lng: <%= longitude %>};
+  <% } %>
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: 12,
     center: chicago
   });
 
-  if( <%= longitude %> != "" )
-  {
-      marker = new google.maps.Marker({
-        map: map,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        position: {lat: <%= latitude %>, lng: <%= longitude %>}
-       });
-  }
+  <% if (longitude != "" && longitude != "" ) { %> 
+  
+       marker = new google.maps.Marker({
+         map: map,
+         draggable: true,
+         animation: google.maps.Animation.DROP,
+         position: {lat: <%= latitude %>, lng: <%= longitude %>}
+        });
+  <% } %>
 
   // Create the DIV to hold the control and call the CenterControl() constructor
   // passing in this DIV.

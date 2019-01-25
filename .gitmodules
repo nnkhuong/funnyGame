@@ -1,0 +1,3 @@
+[submodule "CloserMe/HMI_Demo"]
+	path = CloserMe/HMI_Demo
+	url = https://github.com/nnkhuong/HMI.git
